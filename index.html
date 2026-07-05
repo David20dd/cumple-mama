@@ -1,270 +1,112 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feliz Cumpleaños Mamá</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="background-blur blur-1"></div>
-    <div class="background-blur blur-2"></div>
-    <div id="floating-container"></div>
+const mensajesCarrusel = [
+    "Mamá, gracias por ser mi guía, mi apoyo y mi refugio.",
+    "Tu amor hace más hermosa la vida y más cálido el hogar.",
+    "Eres una bendición inmensa y una mujer admirable.",
+    "No hay regalo más grande que tener una madre como tú.",
+    "Tu ternura, fortaleza y amor hacen brillar a la familia.",
+    "Mamá, tu corazón es uno de los lugares más bonitos del mundo."
+];
 
-    <header class="hero">
-        <div class="top-decor">🌸 💖 🌹 ✨ 🎂 💐</div>
+const bendiciones = [
+    "Mamá, que Dios te bendiga con salud, alegría, paz y muchos años de vida.",
+    "Que este cumpleaños esté lleno de amor, abrazos, sonrisas y momentos inolvidables.",
+    "Eres una mujer maravillosa. Gracias por dar tanto amor a nuestra familia.",
+    "Que tu vida siga floreciendo como un jardín hermoso lleno de bendiciones.",
+    "Hoy celebramos tu existencia, tu ternura, tu fortaleza y tu inmenso corazón.",
+    "Mamá, mereces todo lo bueno, todo lo bello y toda la felicidad del mundo."
+];
 
-        <h1>Feliz Cumpleaños, Mamá</h1>
-        <p class="hero-text">
-            Una página hecha con amor para celebrar a la mujer más maravillosa,
-            la reina del hogar, mi ejemplo y mi alegría.
-        </p>
+let indiceMensaje = 0;
 
-        <div class="hero-buttons">
-            <button class="main-btn" onclick="mostrarCarta()">Abrir carta</button>
-            <button class="secondary-btn" onclick="lluviaEspecial()">Lanzar corazones</button>
-            <button class="secondary-btn" onclick="mostrarBendicion()">Ver sorpresa</button>
-        </div>
-    </header>
+function iniciarCarrusel() {
+    const caja = document.getElementById("messageBox");
+    caja.textContent = mensajesCarrusel[indiceMensaje];
+}
 
-    <main>
-        <section class="section family-section">
-            <h2>El abrazo de mamá</h2>
-            <p class="section-subtext">
-                El amor de una madre abraza, protege, consuela y une a la familia.
-            </p>
+function cambiarMensaje(direccion) {
+    indiceMensaje += direccion;
 
-            <div class="family-scene">
-                <div class="family-heart">❤</div>
-                <div class="ground"></div>
+    if (indiceMensaje < 0) {
+        indiceMensaje = mensajesCarrusel.length - 1;
+    }
 
-                <div class="person daughter">
-                    <div class="hair"></div>
-                    <div class="head"></div>
-                    <div class="body"></div>
-                    <div class="arm arm-left"></div>
-                    <div class="arm arm-right"></div>
-                    <div class="leg leg-left"></div>
-                    <div class="leg leg-right"></div>
-                </div>
+    if (indiceMensaje >= mensajesCarrusel.length) {
+        indiceMensaje = 0;
+    }
 
-                <div class="person mother">
-                    <div class="hair"></div>
-                    <div class="head"></div>
-                    <div class="body"></div>
-                    <div class="arm arm-left"></div>
-                    <div class="arm arm-right"></div>
-                    <div class="hug-arm hug-left"></div>
-                    <div class="hug-arm hug-right"></div>
-                    <div class="leg leg-left"></div>
-                    <div class="leg leg-right"></div>
-                </div>
+    const caja = document.getElementById("messageBox");
+    caja.style.opacity = "0";
 
-                <div class="person son">
-                    <div class="hair"></div>
-                    <div class="head"></div>
-                    <div class="body"></div>
-                    <div class="arm arm-left"></div>
-                    <div class="arm arm-right"></div>
-                    <div class="leg leg-left"></div>
-                    <div class="leg leg-right"></div>
-                </div>
-            </div>
+    setTimeout(() => {
+        caja.textContent = mensajesCarrusel[indiceMensaje];
+        caja.style.opacity = "1";
+    }, 180);
+}
 
-            <p class="scene-caption">
-                Mamá, en tus brazos siempre encontramos amor, seguridad y paz.
-            </p>
-        </section>
+function mostrarCarta() {
+    const carta = document.getElementById("carta");
+    carta.classList.add("show");
+    carta.scrollIntoView({ behavior: "smooth" });
+    lluviaEspecial();
+}
 
-        <section class="section letter-section" id="carta">
-            <div class="envelope-box">
-                <div class="envelope-top"></div>
-                <div class="letter-paper">
-                    <h2>Mi carta para ti</h2>
-                    <p>Querida mamá:</p>
-                    <p>
-                        Hoy quiero darte las gracias por todo lo que eres y por todo lo
-                        que haces. Gracias por tu amor, por tus cuidados, por tus consejos
-                        y por tu paciencia.
-                    </p>
-                    <p>
-                        Gracias por estar siempre presente, por dar tanto de ti y por hacer
-                        del hogar un lugar lleno de cariño, esperanza y alegría.
-                    </p>
-                    <p>
-                        Eres una mujer fuerte, noble, hermosa y llena de luz. En este día
-                        especial deseo que Dios te bendiga con salud, felicidad, paz y muchos
-                        años más de vida.
-                    </p>
-                    <p>
-                        Que hoy recibas todo el amor que mereces, porque eres una madre
-                        maravillosa y una persona muy especial.
-                    </p>
-                    <p class="signature">
-                        Con todo mi amor,<br>
-                        Tu hijo ❤️
-                    </p>
-                </div>
-            </div>
-        </section>
+function voltearTarjeta(tarjeta) {
+    tarjeta.classList.toggle("flipped");
+    crearElementosFlotantes(6);
+}
 
-        <section class="section garden-section">
-            <h2>Un jardín para ti</h2>
-            <p class="section-subtext">
-                Cada flor representa un “gracias”, cada rosa un “te quiero”,
-                y cada detalle un pedacito del amor que siento por ti.
-            </p>
+function mostrarBendicion() {
+    const resultado = document.getElementById("resultado");
+    const indice = Math.floor(Math.random() * bendiciones.length);
 
-            <div class="garden">
-                <div class="flower-card">
-                    <div class="rose">
-                        <span class="rose-center"></span>
-                        <span class="rose-petal rp1"></span>
-                        <span class="rose-petal rp2"></span>
-                        <span class="rose-petal rp3"></span>
-                        <span class="rose-petal rp4"></span>
-                        <span class="rose-petal rp5"></span>
-                        <span class="rose-petal rp6"></span>
-                    </div>
-                    <div class="stem"></div>
-                    <div class="leaf leaf-left"></div>
-                    <div class="leaf leaf-right"></div>
-                </div>
+    resultado.style.opacity = "0";
 
-                <div class="flower-card">
-                    <div class="daisy">
-                        <span class="daisy-petal dp1"></span>
-                        <span class="daisy-petal dp2"></span>
-                        <span class="daisy-petal dp3"></span>
-                        <span class="daisy-petal dp4"></span>
-                        <span class="daisy-petal dp5"></span>
-                        <span class="daisy-petal dp6"></span>
-                        <span class="daisy-petal dp7"></span>
-                        <span class="daisy-petal dp8"></span>
-                        <span class="daisy-center"></span>
-                    </div>
-                    <div class="stem"></div>
-                    <div class="leaf leaf-left"></div>
-                    <div class="leaf leaf-right"></div>
-                </div>
+    setTimeout(() => {
+        resultado.textContent = bendiciones[indice];
+        resultado.style.opacity = "1";
+    }, 180);
 
-                <div class="flower-card">
-                    <div class="tulip">
-                        <span class="tulip-petal tp-left"></span>
-                        <span class="tulip-petal tp-center"></span>
-                        <span class="tulip-petal tp-right"></span>
-                    </div>
-                    <div class="stem"></div>
-                    <div class="leaf leaf-left"></div>
-                    <div class="leaf leaf-right"></div>
-                </div>
+    crearElementosFlotantes(12);
+}
 
-                <div class="flower-card">
-                    <div class="rose rose-soft">
-                        <span class="rose-center"></span>
-                        <span class="rose-petal rp1"></span>
-                        <span class="rose-petal rp2"></span>
-                        <span class="rose-petal rp3"></span>
-                        <span class="rose-petal rp4"></span>
-                        <span class="rose-petal rp5"></span>
-                        <span class="rose-petal rp6"></span>
-                    </div>
-                    <div class="stem"></div>
-                    <div class="leaf leaf-left"></div>
-                    <div class="leaf leaf-right"></div>
-                </div>
-            </div>
-        </section>
+function elegirFigura() {
+    const figuras = ["❤️", "💖", "🌹", "🌸", "💐", "✨", "💕", "🌷"];
+    return figuras[Math.floor(Math.random() * figuras.length)];
+}
 
-        <section class="section cards-section">
-            <h2>Mensajes sorpresa</h2>
-            <p class="section-subtext">
-                Toca cada tarjeta para descubrir un mensaje especial.
-            </p>
+function crearElementoFlotante() {
+    const contenedor = document.getElementById("floating-container");
+    const item = document.createElement("div");
+    item.classList.add("float-item");
+    item.textContent = elegirFigura();
 
-            <div class="cards-grid">
-                <div class="flip-card" onclick="voltearTarjeta(this)">
-                    <div class="flip-inner">
-                        <div class="flip-front">🌹<span>Rosa</span></div>
-                        <div class="flip-back">Mamá, tu amor florece en mi vida todos los días.</div>
-                    </div>
-                </div>
+    item.style.left = Math.random() * 100 + "vw";
+    item.style.fontSize = (Math.random() * 18 + 20) + "px";
+    item.style.animationDuration = (Math.random() * 2 + 4) + "s";
 
-                <div class="flip-card" onclick="voltearTarjeta(this)">
-                    <div class="flip-inner">
-                        <div class="flip-front">💖<span>Corazón</span></div>
-                        <div class="flip-back">Tu corazón es el lugar donde siempre encuentro paz.</div>
-                    </div>
-                </div>
+    contenedor.appendChild(item);
 
-                <div class="flip-card" onclick="voltearTarjeta(this)">
-                    <div class="flip-inner">
-                        <div class="flip-front">✨<span>Luz</span></div>
-                        <div class="flip-back">Gracias por iluminar mi vida con tu ejemplo y ternura.</div>
-                    </div>
-                </div>
+    setTimeout(() => {
+        item.remove();
+    }, 6500);
+}
 
-                <div class="flip-card" onclick="voltearTarjeta(this)">
-                    <div class="flip-inner">
-                        <div class="flip-front">🎂<span>Fiesta</span></div>
-                        <div class="flip-back">Hoy celebramos tu vida y la bendición de tenerte con nosotros.</div>
-                    </div>
-                </div>
+function crearElementosFlotantes(cantidad) {
+    for (let i = 0; i < cantidad; i++) {
+        setTimeout(() => {
+            crearElementoFlotante();
+        }, i * 120);
+    }
+}
 
-                <div class="flip-card" onclick="voltearTarjeta(this)">
-                    <div class="flip-inner">
-                        <div class="flip-front">👑<span>Reina</span></div>
-                        <div class="flip-back">Eres la reina del hogar y la dueña de un amor inmenso.</div>
-                    </div>
-                </div>
+function lluviaEspecial() {
+    crearElementosFlotantes(22);
+}
 
-                <div class="flip-card" onclick="voltearTarjeta(this)">
-                    <div class="flip-inner">
-                        <div class="flip-front">💐<span>Flores</span></div>
-                        <div class="flip-back">Cada flor es un “gracias” por cuidarme con tanto amor.</div>
-                    </div>
-                </div>
-            </div>
-        </section>
+setInterval(() => {
+    crearElementoFlotante();
+}, 2600);
 
-        <section class="section carousel-section">
-            <h2>Palabras bonitas para mamá</h2>
-
-            <div class="message-carousel">
-                <button class="nav-btn" onclick="cambiarMensaje(-1)">❮</button>
-                <div class="message-box" id="messageBox"></div>
-                <button class="nav-btn" onclick="cambiarMensaje(1)">❯</button>
-            </div>
-        </section>
-
-        <section class="section blessing-section">
-            <h2>Presiona para recibir una bendición especial</h2>
-            <button class="main-btn" onclick="mostrarBendicion()">Mostrar mensaje especial</button>
-            <div class="blessing-result" id="resultado">
-                Aquí aparecerá un mensaje lleno de cariño para mamá.
-            </div>
-        </section>
-
-        <section class="section qualities-section">
-            <h2>Lo que representa mamá</h2>
-
-            <div class="qualities-grid">
-                <div class="quality-card">🏡<span>Hogar</span></div>
-                <div class="quality-card">🌷<span>Ternura</span></div>
-                <div class="quality-card">💪<span>Fuerza</span></div>
-                <div class="quality-card">☀️<span>Luz</span></div>
-                <div class="quality-card">🕊️<span>Paz</span></div>
-                <div class="quality-card">💕<span>Amor</span></div>
-                <div class="quality-card">🎀<span>Dulzura</span></div>
-                <div class="quality-card">👑<span>Reina</span></div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        Hecho con amor para la mejor mamá del mundo 💐
-    </footer>
-
-    <script src="script.js"></script>
-</body>
-</html>
+window.onload = function () {
+    iniciarCarrusel();
+};
