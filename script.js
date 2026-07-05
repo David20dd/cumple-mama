@@ -19,25 +19,26 @@ const bendiciones = [
 ];
 
 let indiceMensaje = 0;
+let velasApagadas = false;
 
 function iniciarPagina() {
   mostrarMensajeActual();
 
   setInterval(() => {
     crearElementoFlotante();
-  }, 2400);
+  }, 2600);
 }
 
 function abrirCarta() {
   const carta = document.getElementById("letterSection");
   carta.classList.add("show");
-  carta.scrollIntoView({ behavior: "smooth" });
+  carta.scrollIntoView({ behavior: "smooth", block: "start" });
   crearElementosFlotantes(20);
 }
 
 function lanzarCelebracion() {
   crearElementosFlotantes(30);
-  lanzarConfetti(70);
+  lanzarConfetti(80);
   mostrarBendicionFinal();
 }
 
@@ -79,10 +80,20 @@ function apagarVelitas() {
   const seccion = document.querySelector(".cake-section");
   const mensaje = document.getElementById("cakeMessage");
 
+  if (velasApagadas) {
+    mensaje.textContent = "Las velitas ya están apagadas. El deseo para mamá sigue brillando en el corazón.";
+    crearElementosFlotantes(8);
+    return;
+  }
+
+  velasApagadas = true;
+
   seccion.classList.add("out");
   mensaje.textContent = "¡Deseo pedido! Que mamá tenga un año lleno de salud, amor y bendiciones.";
-  lanzarConfetti(55);
-  crearElementosFlotantes(14);
+
+  crearHumoVelitas();
+  lanzarConfetti(90);
+  crearElementosFlotantes(18);
 }
 
 function mostrarBendicionFinal() {
@@ -90,10 +101,12 @@ function mostrarBendicionFinal() {
   const indice = Math.floor(Math.random() * bendiciones.length);
 
   finalBlessing.style.opacity = "0";
+  finalBlessing.style.transform = "scale(0.96)";
 
   setTimeout(() => {
     finalBlessing.textContent = bendiciones[indice];
     finalBlessing.style.opacity = "1";
+    finalBlessing.style.transform = "scale(1)";
   }, 180);
 
   crearElementosFlotantes(14);
@@ -112,7 +125,7 @@ function crearElementoFlotante() {
   elemento.classList.add("float-item");
   elemento.textContent = elegirFigura();
   elemento.style.left = Math.random() * 100 + "vw";
-  elemento.style.fontSize = Math.random() * 18 + 20 + "px";
+  elemento.style.fontSize = Math.random() * 16 + 20 + "px";
   elemento.style.animationDuration = Math.random() * 2.4 + 4 + "s";
 
   capa.appendChild(elemento);
@@ -141,7 +154,9 @@ function lanzarConfetti(cantidad) {
     confetti.style.left = Math.random() * 100 + "vw";
     confetti.style.background = colores[Math.floor(Math.random() * colores.length)];
     confetti.style.animationDuration = Math.random() * 2.5 + 3 + "s";
-    confetti.style.animationDelay = Math.random() * 0.3 + "s";
+    confetti.style.animationDelay = Math.random() * 0.35 + "s";
+    confetti.style.width = Math.random() * 7 + 7 + "px";
+    confetti.style.height = Math.random() * 10 + 12 + "px";
 
     capa.appendChild(confetti);
 
@@ -149,6 +164,35 @@ function lanzarConfetti(cantidad) {
       confetti.remove();
     }, 6500);
   }
+}
+
+function crearHumoVelitas() {
+  const posiciones = [
+    { left: 46, top: 23 },
+    { left: 50, top: 20 },
+    { left: 54, top: 23 }
+  ];
+
+  const cajaPastel = document.querySelector(".cake-box");
+  const rect = cajaPastel.getBoundingClientRect();
+
+  posiciones.forEach((posicion, index) => {
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        const humo = document.createElement("div");
+        humo.classList.add("smoke-puff");
+
+        humo.style.left = rect.left + rect.width * (posicion.left / 100) + (Math.random() * 26 - 13) + "px";
+        humo.style.top = rect.top + rect.height * (posicion.top / 100) + (Math.random() * 18 - 9) + "px";
+
+        document.body.appendChild(humo);
+
+        setTimeout(() => {
+          humo.remove();
+        }, 2000);
+      }, index * 120 + i * 90);
+    }
+  });
 }
 
 window.onload = iniciarPagina;
