@@ -87,7 +87,6 @@ function apagarVelitas() {
   }
 
   velasApagadas = true;
-
   seccion.classList.add("out");
   mensaje.textContent = "¡Deseo pedido! Que mamá tenga un año lleno de salud, amor y bendiciones.";
 
@@ -167,30 +166,30 @@ function lanzarConfetti(cantidad) {
 }
 
 function crearHumoVelitas() {
-  const posiciones = [
-    { left: 46, top: 23 },
-    { left: 50, top: 20 },
-    { left: 54, top: 23 }
+  const pastel = document.querySelector(".cake-card");
+  const rect = pastel.getBoundingClientRect();
+
+  const puntos = [
+    { x: 0.46, y: 0.15 },
+    { x: 0.50, y: 0.11 },
+    { x: 0.54, y: 0.15 }
   ];
 
-  const cajaPastel = document.querySelector(".cake-box");
-  const rect = cajaPastel.getBoundingClientRect();
-
-  posiciones.forEach((posicion, index) => {
+  puntos.forEach((punto, indice) => {
     for (let i = 0; i < 6; i++) {
       setTimeout(() => {
         const humo = document.createElement("div");
         humo.classList.add("smoke-puff");
 
-        humo.style.left = rect.left + rect.width * (posicion.left / 100) + (Math.random() * 26 - 13) + "px";
-        humo.style.top = rect.top + rect.height * (posicion.top / 100) + (Math.random() * 18 - 9) + "px";
+        humo.style.left = rect.left + rect.width * punto.x + (Math.random() * 20 - 10) + "px";
+        humo.style.top = rect.top + rect.height * punto.y + (Math.random() * 14 - 7) + "px";
 
         document.body.appendChild(humo);
 
         setTimeout(() => {
           humo.remove();
-        }, 2000);
-      }, index * 120 + i * 90);
+        }, 1900);
+      }, indice * 120 + i * 80);
     }
   });
 }
