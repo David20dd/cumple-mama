@@ -85,26 +85,6 @@ function apagarVelitas() {
   crearElementosFlotantes(14);
 }
 
-function agregarDeseo() {
-  const input = document.getElementById("wishInput");
-  const jar = document.getElementById("wishJar");
-  const texto = input.value.trim();
-
-  if (texto === "") {
-    input.placeholder = "Escribe primero un deseo bonito para mamá";
-    crearElementosFlotantes(4);
-    return;
-  }
-
-  const nota = document.createElement("div");
-  nota.classList.add("wish-note");
-  nota.textContent = texto;
-  jar.appendChild(nota);
-
-  input.value = "";
-  crearElementosFlotantes(12);
-}
-
 function mostrarBendicionFinal() {
   const finalBlessing = document.getElementById("finalBlessing");
   const indice = Math.floor(Math.random() * bendiciones.length);
