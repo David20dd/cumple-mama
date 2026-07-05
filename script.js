@@ -1,69 +1,112 @@
+const mensajesCarrusel = [
+    "Mamá, gracias por ser mi guía, mi apoyo y mi refugio.",
+    "Tu amor hace más hermosa la vida y más cálido el hogar.",
+    "Eres una bendición inmensa y una mujer admirable.",
+    "No hay regalo más grande que tener una madre como tú.",
+    "Tu ternura, fortaleza y amor hacen brillar a la familia.",
+    "Mamá, tu corazón es uno de los lugares más bonitos del mundo."
+];
+
+const bendiciones = [
+    "Mamá, que Dios te bendiga con salud, alegría, paz y muchos años de vida.",
+    "Que este cumpleaños esté lleno de amor, abrazos, sonrisas y momentos inolvidables.",
+    "Eres una mujer maravillosa. Gracias por dar tanto amor a nuestra familia.",
+    "Que tu vida siga floreciendo como un jardín hermoso lleno de bendiciones.",
+    "Hoy celebramos tu existencia, tu ternura, tu fortaleza y tu inmenso corazón.",
+    "Mamá, mereces todo lo bueno, todo lo bello y toda la felicidad del mundo."
+];
+
+let indiceMensaje = 0;
+
+function iniciarCarrusel() {
+    const caja = document.getElementById("messageBox");
+    caja.textContent = mensajesCarrusel[indiceMensaje];
+}
+
+function cambiarMensaje(direccion) {
+    indiceMensaje += direccion;
+
+    if (indiceMensaje < 0) {
+        indiceMensaje = mensajesCarrusel.length - 1;
+    }
+
+    if (indiceMensaje >= mensajesCarrusel.length) {
+        indiceMensaje = 0;
+    }
+
+    const caja = document.getElementById("messageBox");
+    caja.style.opacity = "0";
+
+    setTimeout(() => {
+        caja.textContent = mensajesCarrusel[indiceMensaje];
+        caja.style.opacity = "1";
+    }, 180);
+}
+
 function mostrarCarta() {
     const carta = document.getElementById("carta");
-    carta.classList.add("abierta");
+    carta.classList.add("show");
     carta.scrollIntoView({ behavior: "smooth" });
-
-    crearLluviaDeCorazones();
+    lluviaEspecial();
 }
 
 function voltearTarjeta(tarjeta) {
-    tarjeta.classList.toggle("volteada");
-    crearCorazon();
+    tarjeta.classList.toggle("flipped");
+    crearElementosFlotantes(6);
 }
 
 function mostrarBendicion() {
-    const mensajes = [
-        "Mamá, que Dios te bendiga con salud, alegría y muchos años más de vida.",
-        "Eres una mujer maravillosa. Gracias por amar con tanta fuerza y ternura.",
-        "Que hoy recibas abrazos, sonrisas y todo el cariño que mereces.",
-        "Tu amor es un regalo que no se compara con nada en el mundo.",
-        "Mamá, gracias por ser refugio, guía, ejemplo y corazón de la familia.",
-        "Que este cumpleaños sea tan bello como todo el amor que has entregado.",
-        "Hoy celebramos tu vida, tu dulzura y la bendición de tenerte con nosotros."
-    ];
-
     const resultado = document.getElementById("resultado");
-    const indice = Math.floor(Math.random() * mensajes.length);
+    const indice = Math.floor(Math.random() * bendiciones.length);
 
-    resultado.textContent = mensajes[indice];
-    resultado.style.animation = "none";
+    resultado.style.opacity = "0";
 
-    setTimeout(function() {
-        resultado.style.animation = "aparecer 0.6s ease";
-    }, 10);
+    setTimeout(() => {
+        resultado.textContent = bendiciones[indice];
+        resultado.style.opacity = "1";
+    }, 180);
 
-    crearLluviaDeCorazones();
+    crearElementosFlotantes(12);
 }
 
-function crearCorazon() {
-    const corazon = document.createElement("div");
-    corazon.classList.add("corazon-flotante");
-    corazon.textContent = elegirFigura();
-
-    corazon.style.left = Math.random() * 100 + "vw";
-    corazon.style.fontSize = Math.random() * 18 + 20 + "px";
-
-    document.body.appendChild(corazon);
-
-    setTimeout(function() {
-        corazon.remove();
-    }, 5000);
+function elegirFigura() {
+    const figuras = ["❤️", "💖", "🌹", "🌸", "💐", "✨", "💕", "🌷"];
+    return figuras[Math.floor(Math.random() * figuras.length)];
 }
 
-function crearLluviaDeCorazones() {
-    for (let i = 0; i < 18; i++) {
-        setTimeout(function() {
-            crearCorazon();
+function crearElementoFlotante() {
+    const contenedor = document.getElementById("floating-container");
+    const item = document.createElement("div");
+    item.classList.add("float-item");
+    item.textContent = elegirFigura();
+
+    item.style.left = Math.random() * 100 + "vw";
+    item.style.fontSize = (Math.random() * 18 + 20) + "px";
+    item.style.animationDuration = (Math.random() * 2 + 4) + "s";
+
+    contenedor.appendChild(item);
+
+    setTimeout(() => {
+        item.remove();
+    }, 6500);
+}
+
+function crearElementosFlotantes(cantidad) {
+    for (let i = 0; i < cantidad; i++) {
+        setTimeout(() => {
+            crearElementoFlotante();
         }, i * 120);
     }
 }
 
-function elegirFigura() {
-    const figuras = ["❤️", "💖", "🌹", "🌸", "💐", "✨", "🌷", "💕"];
-    const posicion = Math.floor(Math.random() * figuras.length);
-    return figuras[posicion];
+function lluviaEspecial() {
+    crearElementosFlotantes(22);
 }
 
-setInterval(function() {
-    crearCorazon();
-}, 2500);
+setInterval(() => {
+    crearElementoFlotante();
+}, 2600);
+
+window.onload = function () {
+    iniciarCarrusel();
+};
