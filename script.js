@@ -1,96 +1,165 @@
 (() => {
   "use strict";
-  const confettiColors = ["#f7dfb2", "#e6999d", "#ffffff", "#d5aa69", "#b94a6b"];
-  const melody = [{frequency:392,at:0,length:.45},{frequency:440,at:.48,length:.45},{frequency:523.25,at:.96,length:.7},{frequency:440,at:1.72,length:.36},{frequency:493.88,at:2.12,length:.36},{frequency:659.25,at:2.54,length:.92},{frequency:587.33,at:3.56,length:.4},{frequency:523.25,at:4.04,length:.8}];
-  const intro = document.querySelector("#gift-intro");
+
+  window.__birthdayCardReady = true;
+
+  const root = document.documentElement;
+  const giftIntro = document.querySelector("#gift-intro");
   const openGiftButton = document.querySelector("#open-gift");
-  const musicButton = document.querySelector("#music-toggle");
-  const musicLabel = musicButton.querySelector(".sound-label");
-  const celebrateButton = document.querySelector("#celebrate-main");
   const confettiLayer = document.querySelector("#confetti-layer");
+  const celebrateButton = document.querySelector("#celebrate-main");
+  const musicButton = document.querySelector("#music-toggle");
+  const musicLabel = musicButton?.querySelector(".sound-label");
   const envelopeButton = document.querySelector("#envelope-button");
-  const envelopeLabel = envelopeButton.querySelector(".envelope-label");
+  const envelopeLabel = envelopeButton?.querySelector(".envelope-label");
   const cake = document.querySelector("#cake");
-  const blowCandlesButton = document.querySelector("#blow-candles");
-  const celebrationButtonText = blowCandlesButton.querySelector(".celebration-button-text");
-  const celebrationButtonIcon = blowCandlesButton.querySelector(".celebration-button-icon");
+  const candlesButton = document.querySelector("#blow-candles");
+  const candlesButtonText = candlesButton?.querySelector(".celebration-button-text");
+  const candlesButtonIcon = candlesButton?.querySelector(".celebration-button-icon");
   const wishStatus = document.querySelector("#wish-status");
   const backTopButton = document.querySelector("#back-top");
+
+  const confettiColors = ["#f7dfb2", "#e6999d", "#ffffff", "#d5aa69", "#b94a6b"];
   let confettiTimer = 0;
   let musicEngine = null;
 
-  function buildConfetti() {
+  function prepareConfetti() {
+    if (!confettiLayer || confettiLayer.childElementCount) return;
+
     const fragment = document.createDocumentFragment();
     for (let index = 0; index < 84; index += 1) {
       const particle = document.createElement("i");
+      if (index % 4 === 0) particle.className = "is-round";
       particle.style.setProperty("--x", `${((index * 43) % 116) - 58}vw`);
       particle.style.setProperty("--drift", `${((index * 29) % 44) - 22}vw`);
       particle.style.setProperty("--rotation", `${(index * 67) % 360}deg`);
-      particle.style.setProperty("--delay", `${(index % 14) * .035}s`);
-      particle.style.setProperty("--duration", `${1.9 + (index % 9) * .11}s`);
+      particle.style.setProperty("--delay", `${(index % 14) * 0.035}s`);
+      particle.style.setProperty("--duration", `${1.9 + (index % 9) * 0.11}s`);
       particle.style.setProperty("--color", confettiColors[index % confettiColors.length]);
-      if (index % 4 === 0) particle.classList.add("is-round");
       fragment.appendChild(particle);
     }
     confettiLayer.appendChild(fragment);
   }
 
   function celebrate() {
+    if (!confettiLayer) return;
+    prepareConfetti();
     window.clearTimeout(confettiTimer);
     confettiLayer.classList.remove("is-active");
-    window.requestAnimationFrame(() => window.requestAnimationFrame(() => confettiLayer.classList.add("is-active")));
+    void confettiLayer.offsetWidth;
+    confettiLayer.classList.add("is-active");
     confettiTimer = window.setTimeout(() => confettiLayer.classList.remove("is-active"), 3600);
   }
 
+  function openGift() {
+    if (!giftIntro) return;
+    giftIntro.classList.remove("is-open");
+    giftIntro.setAttribute("aria-hidden", "true");
+    window.setTimeout(() => document.querySelector("#inicio")?.focus({ preventScroll: true }), 800);
+  }
+
+  openGiftButton?.addEventListener("click", openGift);
+  celebrateButton?.addEventListener("click", celebrate);
+
+  document.addEventListener("pointermove", (event) => {
+    root.style.setProperty("--pointer-x", `${event.clientX}px`);
+    root.style.setProperty("--pointer-y", `${event.clientY}px`);
+  }, { passive: true });
+
+  const revealItems = document.querySelectorAll("[data-reveal]");
+  if ("IntersectionObserver" in window) {
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -4%" });
+    revealItems.forEach((item) => revealObserver.observe(item));
+  } else {
+    revealItems.forEach((item) => item.classList.add("is-visible"));
+  }
+
+  const melody = [
+    [392, 0, 0.45], [440, 0.48, 0.45], [523.25, 0.96, 0.7],
+    [440, 1.72, 0.36], [493.88, 2.12, 0.36], [659.25, 2.54, 0.92],
+    [587.33, 3.56, 0.4], [523.25, 4.04, 0.8],
+  ];
+
   function playMelody(context, masterGain) {
-    const start = context.currentTime + .06;
-    melody.forEach((note) => {
+    const start = context.currentTime + 0.06;
+    melody.forEach(([frequency, at, length]) => {
       const oscillator = context.createOscillator();
       const noteGain = context.createGain();
       oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(note.frequency, start + note.at);
-      noteGain.gain.setValueAtTime(.0001, start + note.at);
-      noteGain.gain.exponentialRampToValueAtTime(.2, start + note.at + .04);
-      noteGain.gain.exponentialRampToValueAtTime(.0001, start + note.at + note.length);
-      oscillator.connect(noteGain); noteGain.connect(masterGain);
-      oscillator.start(start + note.at); oscillator.stop(start + note.at + note.length + .08);
+      oscillator.frequency.setValueAtTime(frequency, start + at);
+      noteGain.gain.setValueAtTime(0.0001, start + at);
+      noteGain.gain.exponentialRampToValueAtTime(0.2, start + at + 0.04);
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, start + at + length);
+      oscillator.connect(noteGain);
+      noteGain.connect(masterGain);
+      oscillator.start(start + at);
+      oscillator.stop(start + at + length + 0.08);
     });
   }
 
   function stopMusic() {
     if (!musicEngine) return;
-    window.clearInterval(musicEngine.timer);
-    musicEngine.gain.gain.setTargetAtTime(.0001, musicEngine.context.currentTime, .05);
-    const contextToClose = musicEngine.context; musicEngine = null;
-    window.setTimeout(() => contextToClose.close(), 180);
-    musicButton.classList.remove("is-playing"); musicButton.setAttribute("aria-pressed", "false"); musicButton.setAttribute("aria-label", "Reproducir melodía"); musicLabel.textContent = "Música";
+    const engine = musicEngine;
+    window.clearInterval(engine.timer);
+    engine.gain.gain.setTargetAtTime(0.0001, engine.context.currentTime, 0.05);
+    window.setTimeout(() => void engine.context.close(), 180);
+    musicEngine = null;
+    musicButton?.classList.remove("is-playing");
+    musicButton?.setAttribute("aria-pressed", "false");
+    musicButton?.setAttribute("aria-label", "Reproducir melodía");
+    if (musicLabel) musicLabel.textContent = "Música";
   }
 
-  function toggleMusic() {
-    if (musicEngine) { stopMusic(); return; }
+  async function toggleMusic() {
+    if (musicEngine) {
+      stopMusic();
+      return;
+    }
+
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) { musicLabel.textContent = "No disponible"; return; }
-    const context = new AudioContextClass(); const gain = context.createGain();
-    gain.gain.value = .19; gain.connect(context.destination); playMelody(context, gain);
-    const timer = window.setInterval(() => playMelody(context, gain), 6200);
+    if (!AudioContextClass) return;
+
+    const context = new AudioContextClass();
+    const gain = context.createGain();
+    gain.gain.value = 0.14;
+    gain.connect(context.destination);
+    await context.resume();
+    playMelody(context, gain);
+    const timer = window.setInterval(() => playMelody(context, gain), 5200);
     musicEngine = { context, gain, timer };
-    musicButton.classList.add("is-playing"); musicButton.setAttribute("aria-pressed", "true"); musicButton.setAttribute("aria-label", "Pausar melodía"); musicLabel.textContent = "Sonando";
+    musicButton?.classList.add("is-playing");
+    musicButton?.setAttribute("aria-pressed", "true");
+    musicButton?.setAttribute("aria-label", "Pausar melodía");
+    if (musicLabel) musicLabel.textContent = "Sonando";
   }
 
-  function setupRevealAnimations() {
-    const elements = document.querySelectorAll("[data-reveal]");
-    if (!("IntersectionObserver" in window)) { elements.forEach((element) => element.classList.add("is-visible")); return; }
-    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("is-visible"); observer.unobserve(entry.target); } }), { threshold: .14 });
-    elements.forEach((element) => observer.observe(element));
-  }
+  musicButton?.addEventListener("click", () => void toggleMusic());
 
-  document.body.style.overflow = "hidden"; buildConfetti(); setupRevealAnimations();
-  openGiftButton.addEventListener("click", () => { intro.classList.remove("is-open"); intro.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; celebrate(); window.setTimeout(() => document.querySelector("#inicio").focus(), 850); });
-  musicButton.addEventListener("click", toggleMusic);
-  celebrateButton.addEventListener("click", celebrate);
-  envelopeButton.addEventListener("click", () => { const isOpen = envelopeButton.classList.toggle("is-open"); envelopeButton.setAttribute("aria-expanded", String(isOpen)); envelopeButton.setAttribute("aria-label", isOpen ? "Cerrar la carta" : "Abrir la carta"); envelopeLabel.textContent = isOpen ? "Toca para guardar la carta" : "Toca para abrir"; });
-  blowCandlesButton.addEventListener("click", () => { cake.classList.add("is-blown"); celebrationButtonText.textContent = "¡Tu deseo va hacia las estrellas!"; celebrationButtonIcon.textContent = "✦"; wishStatus.textContent = "Que se cumpla todo lo bonito que acabas de imaginar."; celebrate(); });
-  backTopButton.addEventListener("click", () => { window.scrollTo({ top: 0, behavior: "smooth" }); celebrate(); });
-  window.addEventListener("pointermove", (event) => { document.documentElement.style.setProperty("--pointer-x", `${event.clientX}px`); document.documentElement.style.setProperty("--pointer-y", `${event.clientY}px`); }, { passive: true });
-  window.addEventListener("pagehide", () => { window.clearTimeout(confettiTimer); if (musicEngine) { window.clearInterval(musicEngine.timer); musicEngine.context.close(); } });
+  envelopeButton?.addEventListener("click", () => {
+    const isOpen = envelopeButton.classList.toggle("is-open");
+    envelopeButton.setAttribute("aria-expanded", String(isOpen));
+    envelopeButton.setAttribute("aria-label", isOpen ? "Cerrar la carta" : "Abrir la carta");
+    if (envelopeLabel) envelopeLabel.textContent = isOpen ? "Toca para guardar la carta" : "Toca para abrir";
+  });
+
+  candlesButton?.addEventListener("click", () => {
+    cake?.classList.add("is-blown");
+    if (candlesButtonText) candlesButtonText.textContent = "¡Tu deseo va hacia las estrellas!";
+    if (candlesButtonIcon) candlesButtonIcon.textContent = "✦";
+    if (wishStatus) wishStatus.textContent = "Que se cumpla todo lo bonito que acabas de imaginar.";
+    celebrate();
+  });
+
+  backTopButton?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    celebrate();
+  });
+
+  prepareConfetti();
 })();
