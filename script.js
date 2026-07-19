@@ -1,197 +1,96 @@
-const mensajes = [
-  "Mamá, tus hijos te damos gracias por tu amor, tu paciencia y todo lo que haces por nosotros.",
-  "Gracias por cada abrazo, cada consejo y cada muestra de cariño que siempre nos regalas.",
-  "Para tus hijos, eres una bendición inmensa y una mujer admirable.",
-  "Mamá, contigo nuestro hogar siempre ha sido un lugar lleno de amor y paz.",
-  "Tu ternura, tu fortaleza y tu corazón hacen más hermosa nuestra vida.",
-  "Tus hijos te amamos muchísimo y hoy queremos recordarte lo especial que eres para nosotros.",
-  "Gracias por estar siempre presente, cuidarnos y enseñarnos con amor.",
-  "Mamá, eres una luz en la vida de tus hijos y una alegría para nuestra familia."
-];
+(() => {
+  "use strict";
+  const confettiColors = ["#f7dfb2", "#e6999d", "#ffffff", "#d5aa69", "#b94a6b"];
+  const melody = [{frequency:392,at:0,length:.45},{frequency:440,at:.48,length:.45},{frequency:523.25,at:.96,length:.7},{frequency:440,at:1.72,length:.36},{frequency:493.88,at:2.12,length:.36},{frequency:659.25,at:2.54,length:.92},{frequency:587.33,at:3.56,length:.4},{frequency:523.25,at:4.04,length:.8}];
+  const intro = document.querySelector("#gift-intro");
+  const openGiftButton = document.querySelector("#open-gift");
+  const musicButton = document.querySelector("#music-toggle");
+  const musicLabel = musicButton.querySelector(".sound-label");
+  const celebrateButton = document.querySelector("#celebrate-main");
+  const confettiLayer = document.querySelector("#confetti-layer");
+  const envelopeButton = document.querySelector("#envelope-button");
+  const envelopeLabel = envelopeButton.querySelector(".envelope-label");
+  const cake = document.querySelector("#cake");
+  const blowCandlesButton = document.querySelector("#blow-candles");
+  const celebrationButtonText = blowCandlesButton.querySelector(".celebration-button-text");
+  const celebrationButtonIcon = blowCandlesButton.querySelector(".celebration-button-icon");
+  const wishStatus = document.querySelector("#wish-status");
+  const backTopButton = document.querySelector("#back-top");
+  let confettiTimer = 0;
+  let musicEngine = null;
 
-const bendiciones = [
-  "Que Dios te bendiga con salud, alegría, paz y muchos años más de vida.",
-  "Que este cumpleaños esté lleno de amor, sonrisas y momentos inolvidables.",
-  "Que tu vida esté llena de bendiciones tan hermosas como tu corazón.",
-  "Que nunca te falten motivos para sonreír y sentirte muy amada.",
-  "Que recibas todo el amor que has dado a tus hijos durante tantos años.",
-  "Que Dios te cuide, te fortalezca y te llene de felicidad cada día."
-];
-
-let indiceMensaje = 0;
-let velasApagadas = false;
-
-function iniciarPagina() {
-  mostrarMensajeActual();
-
-  setInterval(() => {
-    crearElementoFlotante();
-  }, 2600);
-}
-
-function abrirCarta() {
-  const carta = document.getElementById("letterSection");
-  carta.classList.add("show");
-  carta.scrollIntoView({ behavior: "smooth", block: "start" });
-  crearElementosFlotantes(20);
-}
-
-function lanzarCelebracion() {
-  crearElementosFlotantes(30);
-  lanzarConfetti(80);
-  mostrarBendicionFinal();
-}
-
-function mostrarMensajeActual() {
-  const caja = document.getElementById("messageBox");
-  caja.textContent = mensajes[indiceMensaje];
-}
-
-function cambiarMensaje(direccion) {
-  indiceMensaje += direccion;
-
-  if (indiceMensaje < 0) {
-    indiceMensaje = mensajes.length - 1;
-  }
-
-  if (indiceMensaje >= mensajes.length) {
-    indiceMensaje = 0;
-  }
-
-  const caja = document.getElementById("messageBox");
-  caja.style.opacity = "0";
-  caja.style.transform = "scale(0.96)";
-
-  setTimeout(() => {
-    caja.textContent = mensajes[indiceMensaje];
-    caja.style.opacity = "1";
-    caja.style.transform = "scale(1)";
-  }, 180);
-
-  crearElementosFlotantes(5);
-}
-
-function voltearTarjeta(tarjeta) {
-  tarjeta.classList.toggle("flipped");
-  crearElementosFlotantes(6);
-}
-
-function apagarVelitas() {
-  const seccion = document.querySelector(".cake-section");
-  const mensaje = document.getElementById("cakeMessage");
-
-  if (velasApagadas) {
-    mensaje.textContent = "Las velitas ya están apagadas. El deseo para mamá sigue brillando en el corazón.";
-    crearElementosFlotantes(8);
-    return;
-  }
-
-  velasApagadas = true;
-  seccion.classList.add("out");
-  mensaje.textContent = "¡Deseo pedido! Que mamá tenga un año lleno de salud, amor y bendiciones.";
-
-  crearHumoVelitas();
-  lanzarConfetti(90);
-  crearElementosFlotantes(18);
-}
-
-function mostrarBendicionFinal() {
-  const finalBlessing = document.getElementById("finalBlessing");
-  const indice = Math.floor(Math.random() * bendiciones.length);
-
-  finalBlessing.style.opacity = "0";
-  finalBlessing.style.transform = "scale(0.96)";
-
-  setTimeout(() => {
-    finalBlessing.textContent = bendiciones[indice];
-    finalBlessing.style.opacity = "1";
-    finalBlessing.style.transform = "scale(1)";
-  }, 180);
-
-  crearElementosFlotantes(14);
-}
-
-function elegirFigura() {
-  const figuras = ["❤️", "💖", "💕", "🌸", "🌹", "💐", "✨", "🎂"];
-  const indice = Math.floor(Math.random() * figuras.length);
-  return figuras[indice];
-}
-
-function crearElementoFlotante() {
-  const capa = document.getElementById("floatingLayer");
-  const elemento = document.createElement("div");
-
-  elemento.classList.add("float-item");
-  elemento.textContent = elegirFigura();
-  elemento.style.left = Math.random() * 100 + "vw";
-  elemento.style.fontSize = Math.random() * 16 + 20 + "px";
-  elemento.style.animationDuration = Math.random() * 2.4 + 4 + "s";
-
-  capa.appendChild(elemento);
-
-  setTimeout(() => {
-    elemento.remove();
-  }, 7000);
-}
-
-function crearElementosFlotantes(cantidad) {
-  for (let i = 0; i < cantidad; i++) {
-    setTimeout(() => {
-      crearElementoFlotante();
-    }, i * 85);
-  }
-}
-
-function lanzarConfetti(cantidad) {
-  const capa = document.getElementById("confettiLayer");
-  const colores = ["#ff8fab", "#d6336c", "#ffd43b", "#74c0fc", "#ffffff", "#f59f00"];
-
-  for (let i = 0; i < cantidad; i++) {
-    const confetti = document.createElement("div");
-    confetti.classList.add("confetti");
-
-    confetti.style.left = Math.random() * 100 + "vw";
-    confetti.style.background = colores[Math.floor(Math.random() * colores.length)];
-    confetti.style.animationDuration = Math.random() * 2.5 + 3 + "s";
-    confetti.style.animationDelay = Math.random() * 0.35 + "s";
-    confetti.style.width = Math.random() * 7 + 7 + "px";
-    confetti.style.height = Math.random() * 10 + 12 + "px";
-
-    capa.appendChild(confetti);
-
-    setTimeout(() => {
-      confetti.remove();
-    }, 6500);
-  }
-}
-
-function crearHumoVelitas() {
-  const pastel = document.querySelector(".cake-card");
-  const rect = pastel.getBoundingClientRect();
-
-  const puntos = [
-    { x: 0.47, y: 0.14 },
-    { x: 0.50, y: 0.11 },
-    { x: 0.53, y: 0.14 }
-  ];
-
-  puntos.forEach((punto, indice) => {
-    for (let i = 0; i < 6; i++) {
-      setTimeout(() => {
-        const humo = document.createElement("div");
-        humo.classList.add("smoke-puff");
-
-        humo.style.left = rect.left + rect.width * punto.x + (Math.random() * 18 - 9) + "px";
-        humo.style.top = rect.top + rect.height * punto.y + (Math.random() * 12 - 6) + "px";
-
-        document.body.appendChild(humo);
-
-        setTimeout(() => {
-          humo.remove();
-        }, 1900);
-      }, indice * 120 + i * 80);
+  function buildConfetti() {
+    const fragment = document.createDocumentFragment();
+    for (let index = 0; index < 84; index += 1) {
+      const particle = document.createElement("i");
+      particle.style.setProperty("--x", `${((index * 43) % 116) - 58}vw`);
+      particle.style.setProperty("--drift", `${((index * 29) % 44) - 22}vw`);
+      particle.style.setProperty("--rotation", `${(index * 67) % 360}deg`);
+      particle.style.setProperty("--delay", `${(index % 14) * .035}s`);
+      particle.style.setProperty("--duration", `${1.9 + (index % 9) * .11}s`);
+      particle.style.setProperty("--color", confettiColors[index % confettiColors.length]);
+      if (index % 4 === 0) particle.classList.add("is-round");
+      fragment.appendChild(particle);
     }
-  });
-}
+    confettiLayer.appendChild(fragment);
+  }
 
-window.onload = iniciarPagina;
+  function celebrate() {
+    window.clearTimeout(confettiTimer);
+    confettiLayer.classList.remove("is-active");
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => confettiLayer.classList.add("is-active")));
+    confettiTimer = window.setTimeout(() => confettiLayer.classList.remove("is-active"), 3600);
+  }
+
+  function playMelody(context, masterGain) {
+    const start = context.currentTime + .06;
+    melody.forEach((note) => {
+      const oscillator = context.createOscillator();
+      const noteGain = context.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(note.frequency, start + note.at);
+      noteGain.gain.setValueAtTime(.0001, start + note.at);
+      noteGain.gain.exponentialRampToValueAtTime(.2, start + note.at + .04);
+      noteGain.gain.exponentialRampToValueAtTime(.0001, start + note.at + note.length);
+      oscillator.connect(noteGain); noteGain.connect(masterGain);
+      oscillator.start(start + note.at); oscillator.stop(start + note.at + note.length + .08);
+    });
+  }
+
+  function stopMusic() {
+    if (!musicEngine) return;
+    window.clearInterval(musicEngine.timer);
+    musicEngine.gain.gain.setTargetAtTime(.0001, musicEngine.context.currentTime, .05);
+    const contextToClose = musicEngine.context; musicEngine = null;
+    window.setTimeout(() => contextToClose.close(), 180);
+    musicButton.classList.remove("is-playing"); musicButton.setAttribute("aria-pressed", "false"); musicButton.setAttribute("aria-label", "Reproducir melodía"); musicLabel.textContent = "Música";
+  }
+
+  function toggleMusic() {
+    if (musicEngine) { stopMusic(); return; }
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) { musicLabel.textContent = "No disponible"; return; }
+    const context = new AudioContextClass(); const gain = context.createGain();
+    gain.gain.value = .19; gain.connect(context.destination); playMelody(context, gain);
+    const timer = window.setInterval(() => playMelody(context, gain), 6200);
+    musicEngine = { context, gain, timer };
+    musicButton.classList.add("is-playing"); musicButton.setAttribute("aria-pressed", "true"); musicButton.setAttribute("aria-label", "Pausar melodía"); musicLabel.textContent = "Sonando";
+  }
+
+  function setupRevealAnimations() {
+    const elements = document.querySelectorAll("[data-reveal]");
+    if (!("IntersectionObserver" in window)) { elements.forEach((element) => element.classList.add("is-visible")); return; }
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("is-visible"); observer.unobserve(entry.target); } }), { threshold: .14 });
+    elements.forEach((element) => observer.observe(element));
+  }
+
+  document.body.style.overflow = "hidden"; buildConfetti(); setupRevealAnimations();
+  openGiftButton.addEventListener("click", () => { intro.classList.remove("is-open"); intro.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; celebrate(); window.setTimeout(() => document.querySelector("#inicio").focus(), 850); });
+  musicButton.addEventListener("click", toggleMusic);
+  celebrateButton.addEventListener("click", celebrate);
+  envelopeButton.addEventListener("click", () => { const isOpen = envelopeButton.classList.toggle("is-open"); envelopeButton.setAttribute("aria-expanded", String(isOpen)); envelopeButton.setAttribute("aria-label", isOpen ? "Cerrar la carta" : "Abrir la carta"); envelopeLabel.textContent = isOpen ? "Toca para guardar la carta" : "Toca para abrir"; });
+  blowCandlesButton.addEventListener("click", () => { cake.classList.add("is-blown"); celebrationButtonText.textContent = "¡Tu deseo va hacia las estrellas!"; celebrationButtonIcon.textContent = "✦"; wishStatus.textContent = "Que se cumpla todo lo bonito que acabas de imaginar."; celebrate(); });
+  backTopButton.addEventListener("click", () => { window.scrollTo({ top: 0, behavior: "smooth" }); celebrate(); });
+  window.addEventListener("pointermove", (event) => { document.documentElement.style.setProperty("--pointer-x", `${event.clientX}px`); document.documentElement.style.setProperty("--pointer-y", `${event.clientY}px`); }, { passive: true });
+  window.addEventListener("pagehide", () => { window.clearTimeout(confettiTimer); if (musicEngine) { window.clearInterval(musicEngine.timer); musicEngine.context.close(); } });
+})();
