@@ -20,18 +20,14 @@
   const backTopButton = document.querySelector("#back-top");
 
   const confettiColors = ["#f7dfb2", "#e6999d", "#ffffff", "#d5aa69", "#b94a6b"];
-  const isSmallScreen = window.matchMedia?.("(max-width: 560px)")?.matches ?? false;
   let confettiTimer = 0;
   let musicEngine = null;
-
-  document.body.classList.toggle("intro-open", Boolean(giftIntro?.classList.contains("is-open")));
 
   function prepareConfetti() {
     if (!confettiLayer || confettiLayer.childElementCount) return;
 
     const fragment = document.createDocumentFragment();
-    const particleCount = isSmallScreen ? 60 : 84;
-    for (let index = 0; index < particleCount; index += 1) {
+    for (let index = 0; index < 84; index += 1) {
       const particle = document.createElement("i");
       if (index % 4 === 0) particle.className = "is-round";
       particle.style.setProperty("--x", `${((index * 43) % 116) - 58}vw`);
@@ -59,20 +55,16 @@
     if (!giftIntro) return;
     giftIntro.classList.remove("is-open");
     giftIntro.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("intro-open");
     window.setTimeout(() => document.querySelector("#inicio")?.focus({ preventScroll: true }), 800);
   }
 
   openGiftButton?.addEventListener("click", openGift);
   celebrateButton?.addEventListener("click", celebrate);
 
-  const hasFinePointer = window.matchMedia?.("(pointer: fine)")?.matches ?? true;
-  if (hasFinePointer) {
-    document.addEventListener("pointermove", (event) => {
-      root.style.setProperty("--pointer-x", `${event.clientX}px`);
-      root.style.setProperty("--pointer-y", `${event.clientY}px`);
-    }, { passive: true });
-  }
+  document.addEventListener("pointermove", (event) => {
+    root.style.setProperty("--pointer-x", `${event.clientX}px`);
+    root.style.setProperty("--pointer-y", `${event.clientY}px`);
+  }, { passive: true });
 
   const revealItems = document.querySelectorAll("[data-reveal]");
   if ("IntersectionObserver" in window) {
@@ -116,9 +108,7 @@
     const engine = musicEngine;
     window.clearInterval(engine.timer);
     engine.gain.gain.setTargetAtTime(0.0001, engine.context.currentTime, 0.05);
-    window.setTimeout(() => {
-      if (engine.context.state !== "closed") void engine.context.close().catch(() => {});
-    }, 180);
+    window.setTimeout(() => void engine.context.close(), 180);
     musicEngine = null;
     musicButton?.classList.remove("is-playing");
     musicButton?.setAttribute("aria-pressed", "false");
@@ -133,34 +123,20 @@
     }
 
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) {
-      musicButton?.setAttribute("aria-label", "La melodía no está disponible en este navegador");
-      return;
-    }
+    if (!AudioContextClass) return;
 
-    let context = null;
-    try {
-      context = new AudioContextClass();
-      const gain = context.createGain();
-      gain.gain.value = 0.14;
-      gain.connect(context.destination);
-      await context.resume();
-      playMelody(context, gain);
-      const timer = window.setInterval(() => playMelody(context, gain), 5200);
-      musicEngine = { context, gain, timer };
-      musicButton?.classList.add("is-playing");
-      musicButton?.setAttribute("aria-pressed", "true");
-      musicButton?.setAttribute("aria-label", "Pausar melodía");
-      if (musicLabel) musicLabel.textContent = "Sonando";
-    } catch (error) {
-      console.warn("No fue posible iniciar la melodía en este dispositivo.", error);
-      if (context && context.state !== "closed") {
-        void context.close().catch(() => {});
-      }
-      musicButton?.classList.remove("is-playing");
-      musicButton?.setAttribute("aria-pressed", "false");
-      if (musicLabel) musicLabel.textContent = "Música";
-    }
+    const context = new AudioContextClass();
+    const gain = context.createGain();
+    gain.gain.value = 0.14;
+    gain.connect(context.destination);
+    await context.resume();
+    playMelody(context, gain);
+    const timer = window.setInterval(() => playMelody(context, gain), 5200);
+    musicEngine = { context, gain, timer };
+    musicButton?.classList.add("is-playing");
+    musicButton?.setAttribute("aria-pressed", "true");
+    musicButton?.setAttribute("aria-label", "Pausar melodía");
+    if (musicLabel) musicLabel.textContent = "Sonando";
   }
 
   musicButton?.addEventListener("click", () => void toggleMusic());
@@ -181,15 +157,9 @@
   });
 
   backTopButton?.addEventListener("click", () => {
-    try {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      window.scrollTo(0, 0);
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
     celebrate();
   });
-
-  window.addEventListener("pagehide", stopMusic, { once: true });
 
   prepareConfetti();
 })();
